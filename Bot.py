@@ -42,6 +42,7 @@ def game1(bot, update):
 def game2(bot,update):
     global Gc
     update.message.reply_text(Gc.checker(update.message.text))
+    update.message.reply_text("Для продолжения игры отправьте любое текстовое сообщение")
     return 2
 def help(bot, update):
     #функция показывающая все возможные команды
