@@ -1,51 +1,49 @@
 # Импортируем необходимые классы.
-from telegram.ext import Updater, MessageHandler, Filters, ConversationHandler
-from telegram.ext import CommandHandler
+from telegram.ext import Updater, MessageHandler, Filters, ConversationHandler, CommandHandler
+from telegram import ReplyKeyboardMarkup
 from MainClass import TranslatorClass as tcs
 
+
+reply_keyboard = [['/help', '/stop'],
+                  ['/startranslate']]
+markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 # Определяем функцию-обработчик сообщений.
 # У неё два параметра, сам бот и класс updater, принявший сообщение.
 def start_bot(bot, update):
-    update.message.reply_text("О здравствуй мой повелитель, узнай как управлять мною используя команду /help")
+    #функия привествия
+    update.message.reply_text("О здравствуй мой повелитель, узнай как управлять мною используя команду /help", reply_markup = markup)
     return ConversationHandler.END
 
 def start_translate(bot, update):
-    update.message.reply_text("Я готов переводить всё с русского на английский и наоборот :D")
+    #функция запускающая переводчик
+    update.message.reply_text("Я готов переводить всё с русского на английский и наоборот :D", reply_markup = markup)
     return 1
 
 def translate(bot, update):
-    # У объекта класса Updater есть поле message, являющееся
-    # объектом сообщения.
-    # У message есть поле text, содержащее текст полученного сообщения,
-    # а также метод reply_text(str), отсылающий ответ пользователю,
-    # от которого получено сообщение.
-    update.message.reply_text(tcs.text_to_text(update.message.text))
+    #отсылается переведенное сообщение
+    update.message.reply_text(tcs.text_to_text(update.message.text), reply_markup = markup)
 
 def help(bot, update):
+    #команда показывающая все возможные команды
     update.message.reply_text("Вот все мои команды:\n"
         "/help - все команды\n"
         "/stop - прекратить выполнение команды\n"
-        "/startranslate - начать перевод")
+        "/startranslate - начать перевод", reply_markup=markup)
     return ConversationHandler.END
 
 def stop(bot, update):
     update.message.reply_text(
-        "Я прекратил выполнение последней команды!")
+        "Я прекратил выполнение последней команды!", reply_markup = markup)
     return ConversationHandler.END
 
 def main():
-    # Создаём объект updater. Вместо слова "TOKEN" надо разместить
-    # полученный от @BotFather токен
+    # Создаём объект updater.
     updater = Updater("801307540:AAFiDRxsXzWrMACdKODd697laNDVx6Rk004")
 
     # Получаем из него диспетчер сообщений.
     dp = updater.dispatcher
 
-    # Создаём обработчик сообщений типа Filters.text
-    # из описанной выше функции echo()
-    # После регистрации обработчика в диспетчере эта функция
-    # будет вызываться при получении сообщения с типом "текст",
-    # т.е. текстовых сообщений.
+    #регистрируем команды
     conv_handler = ConversationHandler(
     entry_points=[CommandHandler('startranslate', start_translate),
         CommandHandler('help', help),
